@@ -1,0 +1,102 @@
+<div class="modal-header">
+  <h1>{{actionType}} Japanese Word<span [hidden]="actionType === 'Add'">: {{displayJapaneseWordName}}</span></h1>
+  <button type="button" class="btn btn-danger btn-sm" aria-label="Close" (click)="activeModal.dismiss('Cross click')">X
+  </button>
+</div>
+<form [formGroup]="jWordForm" class="form-horizontal" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="container">
+      <div class="form-group">
+        <label class="control-label font-weight-bold">Japanese Name</label>
+        <input class="form-control col-md-8" type="text"
+          [ngClass]="{ 'is-invalid': submitted && form.japaneseName.errors }" formControlName="japaneseName"/>
+        <div *ngIf="submitted && form.japaneseName.errors" class="invalid-feedback">
+          <div *ngIf="form.japaneseName.errors.required">Japanese name is required.</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label">Definitions</label>
+        <div class="form-inline">
+          <input #addDefinitionInput class="form-control col-md-8 mr-2" type="text"
+            [ngClass]="{ 'is-invalid': submitted && checkIfDefinitionsAreEmpty() }" />
+          <button type="button" class="btn btn-secondary btn-sm" (click)="addDefinition(addDefinitionInput.value); addDefinitionInput.value = ''">+ Add Definition</button>
+          <div *ngIf="submitted" class="invalid-feedback">
+            <div *ngIf="checkIfDefinitionsAreEmpty()">A definition is required.</div>
+          </div>
+          <div *ngIf="duplicateDefinition" class="invalid-feedback d-block">Definition already exists.</div>
+        </div>
+        <mat-accordion>
+          <mat-expansion-panel [expanded]="true">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                All Definitions
+              </mat-panel-title>
+              <mat-panel-description>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <ng-template matExpansionPanelContent>
+              <ng-container formArrayName="englishDefinitions">
+                <div *ngFor="let definition of englishDefinitions.controls; index as $index" formGroupName="{{$index}}" style="display: inline-block">
+                  <label class="mr-1" type="text">{{ definition.value.word }}</label>
+                  <button class="mr-2 btn btn-secondary btn-xs" type="button" (click)="removeDefinition($index)">X</button>
+                </div>
+              </ng-container>
+            </ng-template>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>            
+      <div class="form-group">
+        <label class="control-label">Readings</label>
+        <div class="form-inline">
+          <input #addReadingInput class="form-control col-md-8 mr-2" type="text"
+            [ngClass]="{ 'is-invalid': submitted && checkIfReadingsAreEmpty() }" />
+          <button type="button" class="btn btn-secondary btn-sm" (click)="addReading(addReadingInput.value); addReadingInput.value = ''">+ Add Reading</button>
+          <div *ngIf="submitted && checkIfReadingsAreEmpty()" class="invalid-feedback">
+            <div *ngIf="checkIfReadingsAreEmpty()">A reading is required.</div>
+          </div>
+          <div *ngIf="duplicateReading" class="invalid-feedback d-block">Reading already exists.</div>
+        </div>
+      </div>
+      <mat-accordion>
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              All Readings
+            </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <ng-template matExpansionPanelContent>
+            <ng-container formArrayName="readings">
+              <div *ngFor="let reading of readings.controls; index as $index" formGroupName="{{$index}}" style="display: inline-block">
+                <label class="mr-1" type="text">{{ reading.value.word }}</label>
+                <button class="mr-2 btn btn-secondary btn-xs" type="button" (click)="removeReading($index)">X</button>
+              </div>
+            </ng-container>
+          </ng-template>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <br>
+      <div class="form-group">
+        <label class="control-label">Parts Of Speech</label>
+        <select class="form-control col-md-5 mr-2" formControlName="partsOfSpeech">
+          <option value="">--Select--</option>
+          <option *ngFor="let partOfSpeechOption of partsOfSpeechOptions" [value]="partOfSpeechOption">{{partOfSpeechOption}}</option>
+        </select>
+        <div *ngIf="submitted && !checkIfPartsOfSpeechIsSelected(partsOfSpeech.value)" class="invalid-feedback d-block">
+          Parts of speech is required.
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="control-label">Notes</label>
+        <input class="form-control col-md-8" type="text" formControlName="notes">
+      </div>    
+    </div>
+  </div>
+  
+  <div class="modal-footer">
+    <button class="btn btn-success float-right">Save</button>
+    <button class="btn btn-success float-right" [hidden]="actionType === 'Edit'">Save & Reset</button>
+    <button class="btn btn-secondary float-left" type="button" (click)="cancel()">Cancel</button>
+  </div>
+</form>

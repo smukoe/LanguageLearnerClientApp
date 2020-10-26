@@ -1,0 +1,32 @@
+<h1>List of Japanese Words</h1>
+
+<p *ngIf="!(japaneseWords$ | async)"><em>Loading...</em></p>
+<p>
+  <button (click)="openFormModal()" class="btn btn-primary float-right mb-3">New Word</button>
+</p>
+
+<table class="table table-sm table-hover" *ngIf="(japaneseWords$ | async)?.length>0">
+  <thead>
+    <tr>
+      <th>Word</th>
+      <th>Definition</th>
+      <th>Reading</th>
+      <th>Part Of Speech</th>
+      <th>Notes</th>
+      <th></th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let japaneseWord of (japaneseWords$ | async)">
+      <td><a [routerLink]="['/japaneseWord/', japaneseWord.id]">{{ japaneseWord.japaneseName }}</a></td>
+      <td>{{ getFirstDefinition(japaneseWord.id) }}</td>
+      <td>{{ getFirstReading(japaneseWord.id) }}</td>
+      <td>{{ japaneseWord.partsOfSpeech }}</td>
+      <td>{{ japaneseWord.notes }}</td>
+      <td><button (click)="openFormModal(japaneseWord)" class="btn btn-primary btn-sm float-right">Edit</button></td>
+      <td><a [routerLink]="" (click)="delete(japaneseWord)" class="btn btn-danger btn-sm float-right">Delete</a></td>
+    </tr>
+  </tbody>
+</table>
